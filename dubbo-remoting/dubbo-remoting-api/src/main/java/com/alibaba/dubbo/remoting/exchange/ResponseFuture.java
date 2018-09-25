@@ -55,4 +55,9 @@ public interface ResponseFuture {
      */
     boolean isDone();
 
+    /**
+     * close
+     */
+    void cancel();
+
 }

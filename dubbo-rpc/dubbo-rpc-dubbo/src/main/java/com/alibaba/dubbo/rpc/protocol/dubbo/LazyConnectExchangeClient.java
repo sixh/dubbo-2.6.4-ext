@@ -33,6 +33,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * dubbo protocol support class.
@@ -78,10 +79,10 @@ final class LazyConnectExchangeClient implements ExchangeClient {
     }
 
     @Override
-    public ResponseFuture request(Object request) throws RemotingException {
+    public ResponseFuture request(Object request, Supplier<Long>...supplierMid) throws RemotingException {
         warning(request);
         initClient();
-        return client.request(request);
+        return client.request(request,supplierMid);
     }
 
     @Override
@@ -99,10 +100,10 @@ final class LazyConnectExchangeClient implements ExchangeClient {
     }
 
     @Override
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
+    public ResponseFuture request(Object request, int timeout, Supplier<Long>...supplierMid) throws RemotingException {
         warning(request);
         initClient();
-        return client.request(request, timeout);
+        return client.request(request, timeout,supplierMid);
     }
 
     /**

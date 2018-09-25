@@ -17,7 +17,13 @@
 package com.alibaba.dubbo.demo.consumer;
 
 import com.alibaba.dubbo.demo.DemoService;
+import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.exchange.AsyncCallback;
+import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exchange.support.DefaultAsyncCallback;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.concurrent.TimeUnit;
 
 public class Consumer {
 
@@ -27,20 +33,38 @@ public class Consumer {
         System.setProperty("java.net.preferIPv4Stack", "true");
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/dubbo-demo-consumer.xml"});
         context.start();
-        DemoService demoService = (DemoService) context.getBean("demoService"); // get remote service proxy
-
-        while (true) {
-            try {
-                Thread.sleep(1000);
-                String hello = demoService.sayHello("world"); // call remote method
-                System.out.println(hello); // get result
-
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
+        DefaultAsyncCallback.getIns().register(new AsyncCallback() {
+            @Override
+            public void done(Channel channel, Response response) {
+                if (response.getStatus() != Response.OK) {
+                    System.out.println(response.getErrorMessage());
+                } else {
+                    System.out.println("正常调用----->");
+                }
             }
+        });
+//        ServiceMethodTypeCache.init(context);
+//        Properties properties = new Properties();
+//        properties.setProperty("kafka.server.hosts","10.40.6.151:909DefaultFuture2,10.40.6.152:9092,10.40.6.153:9092");
+//        new ConfigLoaderBean(properties);
+        int count = 1;
+//       / ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(5,count,1000, TimeUnit.MICROSECONDS,new LinkedBlockingQueue<>(1000));
+//        for (int i=0;i<count;i++){
+//            threadPoolExecutor.execute(new Runnable() {
+//                @Override
+//                public void run() {
+        DemoService demoService = (DemoService) context.getBean("demoService"); // 获取远程服务代理
+        for (; ; ) {
+            demoService.hello(); // 执行远程方法
+            try {
+                TimeUnit.MILLISECONDS.sleep(5);
+            } catch (InterruptedException e) {
 
-
+            }
         }
-
+//                }
+//            });
+//        }
+//        System.in.read(); // 按任意键退出
     }
 }

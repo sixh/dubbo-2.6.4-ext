@@ -41,6 +41,8 @@ public class Request {
 
     private boolean mBroken = false;
 
+    private boolean async = false;
+
     private Object mData;
 
     public Request() {
@@ -66,6 +68,14 @@ public class Request {
                     StringUtils.toString(e) + ">";
         }
         return dataStr;
+    }
+
+    public boolean isAsync() {
+        return async;
+    }
+
+    public void setAsync(boolean async) {
+        this.async = async;
     }
 
     public long getId() {

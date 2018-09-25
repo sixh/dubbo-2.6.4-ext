@@ -14,7 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,8 +27,20 @@
 
     <groupId>com.alibaba</groupId>
     <artifactId>dubbo-parent</artifactId>
-    <version>2.6.4-SNAPSHOT</version>
+    <version>2.6.4-ext</version>
     <packaging>pom</packaging>
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Releases Repository</name>
+            <url>http://192.168.1.97:2000/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Nexus Snapshots Repository</name>
+            <url>http://192.168.1.97:2000/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <name>${project.artifactId}</name>
     <description>The parent project of dubbo</description>
@@ -45,8 +58,8 @@
         <url>https://github.com/apache/incubator-dubbo</url>
         <connection>scm:git:https://github.com/apache/incubator-dubbo.git</connection>
         <developerConnection>scm:git:https://github.com/apache/incubator-dubbo.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     <mailingLists>
         <mailingList>
             <name>Development List</name>
@@ -106,8 +119,8 @@
 
         <profile.name>oss</profile.name>
         <!-- for maven compiler plugin -->
-        <java_source_version>1.6</java_source_version>
-        <java_target_version>1.6</java_target_version>
+        <java_source_version>1.8</java_source_version>
+        <java_target_version>1.8</java_target_version>
         <file_encoding>UTF-8</file_encoding>
         <!-- Maven plugins -->
         <maven_jar_version>3.0.2</maven_jar_version>
@@ -120,7 +133,7 @@
         <maven_checkstyle_version>3.0.0</maven_checkstyle_version>
         <maven_jacoco_version>0.8.1</maven_jacoco_version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
-        <arguments />
+        <arguments/>
         <checkstyle.skip>true</checkstyle.skip>
         <rat.skip>true</rat.skip>
     </properties>
@@ -150,7 +163,7 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>dubbo-dependencies-bom</artifactId>
-                <version>2.6.4-SNAPSHOT</version>
+                <version>2.6.4-ext</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -260,7 +273,7 @@
                                     <configLocation>codestyle/checkstyle.xml</configLocation>
                                     <suppressionsLocation>codestyle/checkstyle-suppressions.xml</suppressionsLocation>
                                     <headerLocation>codestyle/checkstyle-header.txt</headerLocation>
-                                    <linkXRef>false</linkXRef>
+                                    <!--<linkXRef>false</linkXRef>-->
                                     <encoding>UTF-8</encoding>
                                     <consoleOutput>true</consoleOutput>
                                     <failOnViolation>true</failOnViolation>
@@ -590,7 +603,7 @@
                     <version>1.10</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.fusesource.hawtjni</groupId>
+                    <groupId>org.fusesoujava_source_versionrce.hawtjni</groupId>
                     <artifactId>maven-hawtjni-plugin</artifactId>
                     <version>1.14</version>
                 </plugin>

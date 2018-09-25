@@ -81,6 +81,8 @@ public class Response {
 
     private byte mStatus = OK;
 
+    private boolean async = false;
+
     private boolean mEvent = false;
 
     private String mErrorMsg;
@@ -88,6 +90,14 @@ public class Response {
     private Object mResult;
 
     public Response() {
+    }
+
+    public boolean isAsync() {
+        return async;
+    }
+
+    public void setAsync(boolean async) {
+        this.async = async;
     }
 
     public Response(long id) {

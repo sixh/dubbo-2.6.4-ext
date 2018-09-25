@@ -29,9 +29,11 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.exchange.support.AsyncDefaultFuture;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 
 import java.net.InetSocketAddress;
+import java.util.function.Supplier;
 
 /**
  * ExchangeReceiver
@@ -97,21 +99,34 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     }
 
     @Override
-    public ResponseFuture request(Object request) throws RemotingException {
-        return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
+    public ResponseFuture request(Object request, Supplier<Long>...supplierMid) throws RemotingException {
+        return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT),supplierMid);
     }
 
     @Override
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
+    public ResponseFuture request(Object request, int timeout, Supplier<Long>...supplierMid) throws RemotingException {
         if (closed) {
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request + ", cause: The channel " + this + " is closed!");
         }
+        //判断一下是否为异步调用;
+        boolean isAsync = channel.getUrl().getParameter(Constants.ASYNC_KEY, false);
+        Request req;
+        if(supplierMid != null && supplierMid.length>0){
+            req = new Request(supplierMid[0].get());
+        }else {
+            req = new Request();
+        }
         // create request.
-        Request req = new Request();
         req.setVersion(Version.getProtocolVersion());
         req.setTwoWay(true);
         req.setData(request);
-        DefaultFuture future = new DefaultFuture(channel, req, timeout);
+        req.setAsync(isAsync);
+        ResponseFuture future;
+        if(!isAsync) {
+            future =  new DefaultFuture(channel, req, timeout);
+        }else {
+            future = new AsyncDefaultFuture(channel,req,timeout);
+        }
         try {
             channel.send(req);
         } catch (RemotingException e) {

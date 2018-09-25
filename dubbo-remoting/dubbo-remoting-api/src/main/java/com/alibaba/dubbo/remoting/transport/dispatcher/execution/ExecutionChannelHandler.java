@@ -58,6 +58,7 @@ public class ExecutionChannelHandler extends WrappedChannelHandler {
                         Response response = new Response(request.getId(), request.getVersion());
                         response.setStatus(Response.SERVER_THREADPOOL_EXHAUSTED_ERROR);
                         response.setErrorMessage(msg);
+                        response.setAsync(request.isAsync());
                         channel.send(response);
                         return;
                     }

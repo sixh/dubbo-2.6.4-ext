@@ -59,7 +59,8 @@ public class ExchangeCodec extends TelnetCodec {
     protected static final byte FLAG_REQUEST = (byte) 0x80;
     protected static final byte FLAG_TWOWAY = (byte) 0x40;
     protected static final byte FLAG_EVENT = (byte) 0x20;
-    protected static final int SERIALIZATION_MASK = 0x1f;
+    protected static final byte FLAG_ASYNC = (byte) 0x10;
+    protected static final int SERIALIZATION_MASK = 0xf;
     private static final Logger logger = LoggerFactory.getLogger(ExchangeCodec.class);
 
     public Short getMagicCode() {
@@ -152,6 +153,7 @@ public class ExchangeCodec extends TelnetCodec {
             // get status.
             byte status = header[3];
             res.setStatus(status);
+            res.setAsync((flag & FLAG_ASYNC) != 0);
             if (status == Response.OK) {
                 try {
                     Object data;
@@ -176,6 +178,7 @@ public class ExchangeCodec extends TelnetCodec {
             Request req = new Request(id);
             req.setVersion(Version.getProtocolVersion());
             req.setTwoWay((flag & FLAG_TWOWAY) != 0);
+            req.setAsync((flag & FLAG_ASYNC)  != 0);
             if ((flag & FLAG_EVENT) != 0) {
                 req.setEvent(Request.HEARTBEAT_EVENT);
             }
@@ -220,6 +223,7 @@ public class ExchangeCodec extends TelnetCodec {
 
         if (req.isTwoWay()) header[2] |= FLAG_TWOWAY;
         if (req.isEvent()) header[2] |= FLAG_EVENT;
+        if(req.isAsync()) header[2] |= FLAG_ASYNC;
 
         // set request id.
         Bytes.long2bytes(req.getId(), header, 4);
@@ -261,6 +265,7 @@ public class ExchangeCodec extends TelnetCodec {
             // set request and serialization flag.
             header[2] = serialization.getContentTypeId();
             if (res.isHeartbeat()) header[2] |= FLAG_EVENT;
+            if(res.isAsync()) header[2] |= FLAG_ASYNC;
             // set response status.
             byte status = res.getStatus();
             header[3] = status;

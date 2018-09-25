@@ -75,6 +75,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
             // get status.
             byte status = header[3];
             res.setStatus(status);
+            res.setAsync((flag & FLAG_ASYNC) != 0);
             if (status == Response.OK) {
                 try {
                     Object data;
@@ -114,6 +115,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
             Request req = new Request(id);
             req.setVersion(Version.getProtocolVersion());
             req.setTwoWay((flag & FLAG_TWOWAY) != 0);
+            req.setAsync((flag & FLAG_ASYNC) != 0);
             if ((flag & FLAG_EVENT) != 0) {
                 req.setEvent(Request.HEARTBEAT_EVENT);
             }

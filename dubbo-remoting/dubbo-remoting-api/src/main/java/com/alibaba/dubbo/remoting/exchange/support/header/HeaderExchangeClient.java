@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * DefaultMessageClient
@@ -71,8 +72,8 @@ public class HeaderExchangeClient implements ExchangeClient {
     }
 
     @Override
-    public ResponseFuture request(Object request) throws RemotingException {
-        return channel.request(request);
+    public ResponseFuture request(Object request, Supplier<Long>...supplierMid) throws RemotingException {
+        return channel.request(request,supplierMid);
     }
 
     @Override
@@ -86,8 +87,8 @@ public class HeaderExchangeClient implements ExchangeClient {
     }
 
     @Override
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
-        return channel.request(request, timeout);
+    public ResponseFuture request(Object request, int timeout, Supplier<Long>...supplierMid) throws RemotingException {
+        return channel.request(request, timeout,supplierMid);
     }
 
     @Override

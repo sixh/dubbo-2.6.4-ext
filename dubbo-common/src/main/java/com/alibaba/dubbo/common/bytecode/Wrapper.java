@@ -16,6 +16,7 @@
  */
 package com.alibaba.dubbo.common.bytecode;
 
+import com.alibaba.dubbo.common.extension.ProxyExternal;
 import com.alibaba.dubbo.common.utils.ClassHelper;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 
@@ -23,11 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
@@ -153,6 +150,11 @@ public abstract class Wrapper {
                 continue;
 
             String mn = m.getName();
+            ProxyExternal annotation = m.getAnnotation(ProxyExternal.class);
+            String mndis = mn;
+            if(annotation != null && annotation.flag()){
+                mndis="$"+mn;
+            }
             c3.append(" if( \"").append(mn).append("\".equals( $2 ) ");
             int len = m.getParameterTypes().length;
             c3.append(" && ").append(" $3.length == ").append(len);
@@ -182,9 +184,9 @@ public abstract class Wrapper {
 
             c3.append(" }");
 
-            mns.add(mn);
+            mns.add(mndis);
             if (m.getDeclaringClass() == c)
-                dmns.add(mn);
+                dmns.add(mndis);
             ms.put(ReflectUtils.getDesc(m), m);
         }
         if (hasMethod) {

@@ -29,6 +29,7 @@ import com.alibaba.dubbo.remoting.exchange.support.Replier;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * MockedClient
@@ -79,11 +80,11 @@ public class MockedClient implements ExchangeClient {
         this.sent = msg;
     }
 
-    public ResponseFuture request(Object msg) throws RemotingException {
-        return request(msg, 0);
+    public ResponseFuture request(Object msg, Supplier<Long>...supplierMid) throws RemotingException {
+        return request(msg, 0,supplierMid);
     }
 
-    public ResponseFuture request(Object msg, int timeout) throws RemotingException {
+    public ResponseFuture request(Object msg, int timeout, Supplier<Long>...supplierMid) throws RemotingException {
         this.invoked = msg;
         return new ResponseFuture() {
             public Object get() throws RemotingException {
@@ -96,6 +97,11 @@ public class MockedClient implements ExchangeClient {
 
             public boolean isDone() {
                 return true;
+            }
+
+            @Override
+            public void cancel() {
+
             }
 
             public void setCallback(ResponseCallback callback) {

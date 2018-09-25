@@ -56,6 +56,12 @@ public class Constants {
     public static final String VALIDATION_KEY = "validation";
 
     public static final String CACHE_KEY = "cache";
+    /**
+     * 修改后的加入;
+     */
+    public static final String BEF_PROXY_KEY = "proxyId";
+
+    public static final String DEF_PROXY_TYPE = "com.proxy.default";
 
     public static final String DYNAMIC_KEY = "dynamic";
 

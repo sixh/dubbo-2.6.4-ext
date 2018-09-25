@@ -20,17 +20,12 @@ import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.utils.AtomicPositiveInteger;
 import com.alibaba.dubbo.common.utils.ConfigUtils;
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
-import com.alibaba.dubbo.rpc.Invocation;
-import com.alibaba.dubbo.rpc.Invoker;
-import com.alibaba.dubbo.rpc.Result;
-import com.alibaba.dubbo.rpc.RpcContext;
-import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.rpc.RpcInvocation;
-import com.alibaba.dubbo.rpc.RpcResult;
+import com.alibaba.dubbo.rpc.*;
 import com.alibaba.dubbo.rpc.protocol.AbstractInvoker;
 import com.alibaba.dubbo.rpc.support.RpcUtils;
 
@@ -87,7 +82,13 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 RpcContext.getContext().setFuture(null);
                 return new RpcResult();
             } else if (isAsync) {
-                ResponseFuture future = currentClient.request(inv, timeout);
+                ResponseFuture future;
+                if(StringUtils.isBlank(inv.getAttachment(Constants.BEF_PROXY_KEY))){
+                    future =  currentClient.request(inv, timeout);
+                }else {
+                    String mid = inv.getAttachment(Constants.BEF_PROXY_KEY);
+                    future = currentClient.request(inv, timeout,() -> Long.valueOf(mid));
+                }
                 RpcContext.getContext().setFuture(new FutureAdapter<Object>(future));
                 return new RpcResult();
             } else {

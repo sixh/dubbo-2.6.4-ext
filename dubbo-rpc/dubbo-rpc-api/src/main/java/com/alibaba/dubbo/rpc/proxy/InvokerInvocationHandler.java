@@ -21,6 +21,8 @@ import com.alibaba.dubbo.rpc.RpcInvocation;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * InvokerHandler
@@ -49,7 +51,9 @@ public class InvokerInvocationHandler implements InvocationHandler {
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
-        return invoker.invoke(new RpcInvocation(method, args)).recreate();
+        Map<String,String> attr = new HashMap<>();
+        attr.put("proxyId","123545");
+        return invoker.invoke(new RpcInvocation(method, args,attr)).recreate();
     }
 
 }

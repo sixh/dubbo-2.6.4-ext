@@ -16,27 +16,17 @@
  */
 package com.alibaba.dubbo.common.utils;
 
+import com.alibaba.dubbo.common.extension.ProxyExternal;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
@@ -121,6 +111,8 @@ public final class ReflectUtils {
     private static final ConcurrentMap<String, Class<?>> NAME_CLASS_CACHE = new ConcurrentHashMap<String, Class<?>>();
 
     private static final ConcurrentMap<String, Method> Signature_METHODS_CACHE = new ConcurrentHashMap<String, Method>();
+
+    private static final ConcurrentMap<String, String> Proxy_METHODS_TYPE_CACHE = new ConcurrentHashMap<String, String>();
 
     private ReflectUtils() {
     }
@@ -1019,4 +1011,45 @@ public final class ReflectUtils {
 
         return properties;
     }
+
+    public static String findMethodByProxyType(Class<?> clazz, String methodName) throws NoSuchMethodException {
+        String signature = clazz.getName() + "." + methodName;
+        String type = Proxy_METHODS_TYPE_CACHE.get(signature);
+        if (!StringUtils.isBlank(type)) {
+            return type;
+        }
+        List<String> finded = new ArrayList<String>();
+        for (Method m : clazz.getMethods()) {
+            if (m.getName().equals(methodName)) {
+                Class<?>[] parameterTypes = m.getParameterTypes();
+                if(parameterTypes.length == 1 && isProxyRecognizable(parameterTypes[0])){
+                    ProxyExternal annotation = m.getAnnotation(ProxyExternal.class);
+                    if(annotation != null && annotation.flag()) {
+                        finded.add(parameterTypes[0].getName());
+                    }
+                }
+            }
+        }
+            if (finded.isEmpty()) {
+                throw new NoSuchMethodException("No such method " + methodName + " in class " + clazz);
+            }
+            if (finded.size() > 1) {
+                String msg = String.format("Not unique method for method name(%s) in class(%s), find %d methods.",
+                        methodName, clazz.getName(), finded.size());
+                throw new IllegalStateException(msg);
+            }
+        type= finded.get(0);
+        Proxy_METHODS_TYPE_CACHE.put(signature, type);
+        return type;
+    }
+    public static boolean isProxyRecognizable(Class c){
+        if (c.isArray()) {
+            return false;
+        }
+        if(c.isPrimitive()){
+            return false;
+        }
+        return true;
+    }
+
 }

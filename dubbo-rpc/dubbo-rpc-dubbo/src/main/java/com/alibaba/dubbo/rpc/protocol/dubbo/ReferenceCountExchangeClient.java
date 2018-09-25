@@ -28,6 +28,7 @@ import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * dubbo protocol support class.
@@ -59,8 +60,8 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
     }
 
     @Override
-    public ResponseFuture request(Object request) throws RemotingException {
-        return client.request(request);
+    public ResponseFuture request(Object request, Supplier<Long>...supplierMid) throws RemotingException {
+        return client.request(request,supplierMid);
     }
 
     @Override
@@ -79,8 +80,8 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
     }
 
     @Override
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
-        return client.request(request, timeout);
+    public ResponseFuture request(Object request, int timeout, Supplier<Long>...supplierMid) throws RemotingException {
+        return client.request(request, timeout,supplierMid);
     }
 
     @Override

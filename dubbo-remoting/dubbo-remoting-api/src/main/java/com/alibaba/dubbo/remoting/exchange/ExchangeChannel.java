@@ -19,6 +19,8 @@ package com.alibaba.dubbo.remoting.exchange;
 import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.RemotingException;
 
+import java.util.function.Supplier;
+
 /**
  * ExchangeChannel. (API/SPI, Prototype, ThreadSafe)
  */
@@ -31,7 +33,7 @@ public interface ExchangeChannel extends Channel {
      * @return response future
      * @throws RemotingException
      */
-    ResponseFuture request(Object request) throws RemotingException;
+    ResponseFuture request(Object request,Supplier<Long>...supplierMid) throws RemotingException;
 
     /**
      * send request.
@@ -41,7 +43,7 @@ public interface ExchangeChannel extends Channel {
      * @return response future
      * @throws RemotingException
      */
-    ResponseFuture request(Object request, int timeout) throws RemotingException;
+    ResponseFuture request(Object request, int timeout, Supplier<Long>...supplierMid) throws RemotingException;
 
     /**
      * get message handler.

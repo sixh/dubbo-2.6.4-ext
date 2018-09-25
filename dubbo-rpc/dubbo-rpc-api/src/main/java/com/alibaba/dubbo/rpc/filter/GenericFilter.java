@@ -28,20 +28,14 @@ import com.alibaba.dubbo.common.serialize.Serialization;
 import com.alibaba.dubbo.common.utils.PojoUtils;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.rpc.Filter;
-import com.alibaba.dubbo.rpc.Invocation;
-import com.alibaba.dubbo.rpc.Invoker;
-import com.alibaba.dubbo.rpc.Result;
-import com.alibaba.dubbo.rpc.RpcContext;
-import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.rpc.RpcInvocation;
-import com.alibaba.dubbo.rpc.RpcResult;
+import com.alibaba.dubbo.rpc.*;
 import com.alibaba.dubbo.rpc.service.GenericException;
 import com.alibaba.dubbo.rpc.service.GenericService;
 import com.alibaba.dubbo.rpc.support.ProtocolUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * GenericInvokerFilter.
@@ -59,6 +53,13 @@ public class GenericFilter implements Filter {
             String[] types = (String[]) inv.getArguments()[1];
             Object[] args = (Object[]) inv.getArguments()[2];
             try {
+                if(types != null && types.length>0){
+                    boolean equals = Objects.equals(types[0], Constants.DEF_PROXY_TYPE);
+                    if(equals){
+                       String type = ReflectUtils.findMethodByProxyType(invoker.getInterface(), name);
+                       types[0] = type;
+                    }
+                }
                 Method method = ReflectUtils.findMethodByMethodSignature(invoker.getInterface(), name, types);
                 Class<?>[] params = method.getParameterTypes();
                 if (args == null) {

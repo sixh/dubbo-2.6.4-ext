@@ -139,6 +139,7 @@ public class DefaultFuture implements ResponseFuture {
         return returnFromResponse();
     }
 
+    @Override
     public void cancel() {
         Response errorResult = new Response(id);
         errorResult.setErrorMessage("request future has been canceled.");
@@ -151,6 +152,8 @@ public class DefaultFuture implements ResponseFuture {
     public boolean isDone() {
         return response != null;
     }
+
+
 
     @Override
     public void setCallback(ResponseCallback callback) {

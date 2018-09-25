@@ -30,6 +30,7 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exchange.support.AsyncDefaultFuture;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerDelegate;
 
@@ -57,7 +58,11 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
 
     static void handleResponse(Channel channel, Response response) throws RemotingException {
         if (response != null && !response.isHeartbeat()) {
-            DefaultFuture.received(channel, response);
+            if(response.isAsync()){
+                AsyncDefaultFuture.received(channel,response);
+            }else {
+                DefaultFuture.received(channel, response);
+            }
         }
     }
 
@@ -77,6 +82,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
 
     Response handleRequest(ExchangeChannel channel, Request req) throws RemotingException {
         Response res = new Response(req.getId(), req.getVersion());
+        res.setAsync(req.isAsync());
         if (req.isBroken()) {
             Object data = req.getData();
 

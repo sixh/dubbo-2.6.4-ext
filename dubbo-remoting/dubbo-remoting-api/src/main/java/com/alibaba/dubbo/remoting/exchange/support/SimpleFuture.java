@@ -51,4 +51,8 @@ public class SimpleFuture implements ResponseFuture {
         return true;
     }
 
+    @Override
+    public void cancel() {
+
+    }
 }
