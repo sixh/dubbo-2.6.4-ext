@@ -26,6 +26,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -151,6 +155,24 @@ public class PojoUtils {
             for (Map.Entry<Object, Object> obj : src.entrySet()) {
                 dest.put(generalize(obj.getKey(), history), generalize(obj.getValue(), history));
             }
+            return dest;
+        }
+        if (pojo instanceof LocalDateTime) {
+            LocalDateTime dateTime = (LocalDateTime) pojo;
+            String dest = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            history.put(pojo, dest);
+            return dest;
+        }
+        if (pojo instanceof LocalDate) {
+            LocalDate dateTime = (LocalDate) pojo;
+            String dest = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            history.put(pojo, dest);
+            return dest;
+        }
+        if (pojo instanceof LocalTime) {
+            LocalTime dateTime = (LocalTime) pojo;
+            String dest = dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            history.put(pojo, dest);
             return dest;
         }
         Map<String, Object> map = new HashMap<String, Object>();
